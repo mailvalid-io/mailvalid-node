@@ -1,0 +1,25 @@
+{
+  "name": "mailvalid",
+  "version": "0.1.0",
+  "description": "Official Node.js / TypeScript client for the MailValid email verification API",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "type": "commonjs",
+  "scripts": {
+    "build": "tsc",
+    "test": "node --test test/"
+  },
+  "keywords": ["email verification", "email validation", "mailvalid", "smtp verification", "disposable email"],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mailvalid/mailvalid-node.git"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.0",
+    "@types/node": "^20.0.0"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
