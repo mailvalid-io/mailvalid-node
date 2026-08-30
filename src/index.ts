@@ -64,6 +64,26 @@ export interface MailValidOptions {
   timeoutMs?: number;
 }
 
+/**
+ * The API returns `detail` as a plain string for most errors, but FastAPI's
+ * request-validation errors (422) return an array of `{ loc, msg }` objects.
+ * Flatten both into a readable string.
+ */
+function formatDetail(detail: unknown): string | undefined {
+  if (detail == null) return undefined;
+  if (typeof detail === "string") return detail;
+  if (Array.isArray(detail)) {
+    const parts = detail.map((d) => {
+      if (typeof d === "string") return d;
+      const loc = Array.isArray(d?.loc) ? d.loc.filter((p: unknown) => p !== "body").join(".") : undefined;
+      const msg = d?.msg ?? JSON.stringify(d);
+      return loc ? `${loc}: ${msg}` : String(msg);
+    });
+    return parts.join("; ");
+  }
+  return JSON.stringify(detail);
+}
+
 export class MailValidError extends Error {
   constructor(message: string, public status?: number, public detail?: string) {
     super(message);
@@ -161,7 +181,7 @@ export class MailValid {
         let detail = res.statusText;
         try {
           const errBody = await res.json();
-          detail = errBody?.detail ?? detail;
+          detail = formatDetail(errBody?.detail) ?? detail;
         } catch {
           // response wasn't JSON, keep statusText
         }
